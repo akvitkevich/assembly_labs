@@ -1,27 +1,28 @@
 .486
-public sort_cdecl
-public sort_stdcall
-;public @sort_fastcall@8
+PUBLIC sortMas
 .model flat
 .code
-
-sort_cdecl proc c, A:dword, n:dword
-		mov ecx, n
-		dec ecx
-		cmp ecx, 0
-		je end_of_prog
+sortMas proc c A:dword, n:dword
+		mov esi, [ebp+8]
+		mov ecx, [ebp+12]
+		cmp ecx, 2
+		jg for1
+		ret
 	for1 :
-		mov esi, A
+		cmp ecx, 1
+		je finish
 		mov edx, ecx
+		push esi
 	for2 :
 		mov eax, [esi]
 		add esi, 4
+		test eax, eax
+		js signed
+		jmp _pr
+	signed:
 		mov ebx, [esi]
-		cmp eax, 10
-		jl ok
-		cmp ebx, 10
-		jle _swap
-	ok :
+		test ebx, ebx
+		jns _swap
 		jmp _pr
 	_swap :
 		mov [esi], eax
@@ -30,82 +31,14 @@ sort_cdecl proc c, A:dword, n:dword
 		add esi, 4
 	_pr :
 		dec edx
-		cmp edx, 0
+		cmp edx, 1
 		je _tr
 		jmp for2
 	_tr :
-		loop for1
-	end_of_prog :
-		ret
-sort_cdecl endp
-
-sort_stdcall proc stdcall, A:dword, n:dword
-		mov ecx, n
+		pop esi
 		dec ecx
-		cmp ecx, 0
-		je end_of_prog
-	for1 :
-		mov esi, A
-		mov edx, ecx
-	for2 :
-		mov eax, [esi]
-		add esi, 4
-		mov ebx, [esi]
-		cmp eax, 10
-		jl ok
-		cmp ebx, 10
-		jle _swap
-	ok :
-		jmp _pr
-	_swap :
-		mov [esi], eax
-		sub esi, 4
-		mov [esi], ebx
-		add esi, 4
-	_pr :
-		dec edx
-		cmp edx, 0
-		je _tr
-		jmp for2
-	_tr :
-		loop for1
-	end_of_prog :
-		ret
-sort_stdcall endp
-
-@sort_fastcall@8 proc
-	local A:dword
-		mov A, edx
-		dec ecx
-		cmp ecx, 0
-		je end_of_prog
-	for1 :
-		mov esi, A
-		mov edx, ecx
-	for2 :
-		mov eax, [esi]
-		add esi, 4
-		mov ebx, [esi]
-		cmp eax, 10
-		jl ok
-		cmp ebx, 10
-		jle _swap
-	ok :
-		jmp _pr
-	_swap :
-		mov [esi], eax
-		sub esi, 4
-		mov [esi], ebx
-		add esi, 4
-	_pr :
-		dec edx
-		cmp edx, 0
-		je _tr
-		jmp for2
-	_tr :
-		loop for1
-	end_of_prog :
-		ret
-@sort_fastcall@8 endp
-
+		jmp for1
+	finish:
+	ret 
+sortMas endp
 end
